@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
-from accounts.forms import UserLoginForm
+from accounts.forms import UserLoginForm, UserCreationForm
 
 
 def index(request):
@@ -26,14 +26,15 @@ def login(request):
 
         if login_form.is_valid():
             user = auth.authenticate(username=request.POST['username'],
-                                    password=request.POST['password'])
+                                     password=request.POST['password'])
             messages.success(request, "You have successfully logged in!")
 
             if user:
                 auth.login(user=user, request=request)
                 return redirect(reverse('index'))
             else:
-                login_form.add_error(None, "Your username or password is incorrect")
+                login_form.add_error(
+                    None, "Your username or password is incorrect")
     else:
         login_form = UserLoginForm()
     return render(request, 'login.html', {'login_form': login_form})
@@ -41,4 +42,6 @@ def login(request):
 
 def registration(request):
     """Render the registration page"""
-    return render(request, 'registration.html')
+    registration_form = UserCreationForm()
+    return render(request, 'registration.html', {
+        "registration_form": registration_form})
